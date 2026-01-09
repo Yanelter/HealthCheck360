@@ -1,38 +1,36 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 
 const app = express();
-app.use(cors()); // Autorise le frontend à parler au backend
-app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json());
 
-// Configuration de la connexion BDD
+// Configuration de la Base de Données
 const dbConfig = {
-    host: process.env.DB_HOST || 'db', // 'db' est le nom du service dans docker-compose
-    user: process.env.DB_USER || 'user',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'healthcheck_db'
+    host: 'db', // Nom du service dans docker-compose
+    user: 'user',
+    password: 'password',
+    database: 'healthcheck_db'
 };
 
 let connection;
 
-// Fonction pour se connecter avec reconnexion automatique (car la BDD met du temps à démarrer)
 function handleDisconnect() {
     connection = mysql.createConnection(dbConfig);
 
-    connection.connect(function(err) {
-        if(err) {
-            console.log('Erreur de connexion BDD, nouvelle tentative dans 2 secondes...', err);
+    connection.connect(err => {
+        if (err) {
+            console.error('Erreur de connexion BDD, nouvelle tentative dans 2 secondes...', err);
             setTimeout(handleDisconnect, 2000);
         } else {
             console.log('Connecté à la Base de Données !');
         }
     });
 
-    connection.on('error', function(err) {
-        console.log('Erreur BDD', err);
-        if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+    connection.on('error', err => {
+        console.error('Erreur BDD', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {
             throw err;
@@ -42,34 +40,67 @@ function handleDisconnect() {
 
 handleDisconnect();
 
-// --- ROUTES (C'est ici que ton site va appeler) ---
+// --- ROUTES ---
 
-// 1. Route de test
+// 1. Route de test (Accueil)
 app.get('/', (req, res) => {
     res.send('API HealthCheck360 fonctionnelle !');
 });
 
-// 2. Sauvegarder une mesure (Pour ton bouton "Créer")
-app.post('/api/measures', (req, res) => {
-    const data = req.body;
-    // data contient : { name, type, min, max, frequency... }
+// 2. LOGIN : Vérifier email et mot de passe
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
     
-    // Exemple simplifié d'insertion (à adapter selon tes besoins exacts)
-    // Ici on simule, car il faudrait gérer les ID des check_points, etc.
-    console.log("Reçu nouvelle mesure :", data);
+    // Comparaison simple pour l'exercice (En vrai : utiliser bcrypt)
+    const sql = "SELECT * FROM users WHERE email = ? AND password_hash = ?";
     
-    // Requête SQL réelle (Exemple)
-    const sql = "INSERT INTO measure_definitions (question_text, input_type) VALUES (?, ?)";
-    connection.query(sql, [data.name, data.type], (err, result) => {
-        if (err) {
-            res.status(500).send("Erreur lors de l'enregistrement");
+    connection.query(sql, [email, password], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        
+        if (results.length > 0) {
+            const user = results[0];
+            res.json({ 
+                success: true, 
+                user: { id: user.id, name: user.first_name, role: user.role } 
+            });
         } else {
-            res.status(200).send({ message: "Mesure créée !", id: result.insertId });
+            res.status(401).json({ success: false, message: "Email ou mot de passe incorrect" });
         }
     });
 });
 
-// Lancer le serveur
-app.listen(3000, () => {
-    console.log('Serveur Backend démarré sur le port 3000');
+// 3. GESTION UTILISATEURS (Liste)
+app.get('/api/users', (req, res) => {
+    connection.query("SELECT id, first_name, last_name, email, role FROM users", (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+// 4. CRÉER UTILISATEUR
+app.post('/api/users', (req, res) => {
+    const { first_name, last_name, email, password, role } = req.body;
+    const sql = "INSERT INTO users (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)";
+    
+    connection.query(sql, [first_name, last_name, email, password, role], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, id: result.insertId });
+    });
+});
+
+// 5. CHANGER RÔLE
+app.put('/api/users/:id/role', (req, res) => {
+    const userId = req.params.id;
+    const { role } = req.body;
+    const sql = "UPDATE users SET role = ? WHERE id = ?";
+    connection.query(sql, [role, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+    });
+});
+
+// Lancement du serveur
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Serveur Backend démarré sur le port ${PORT}`);
 });

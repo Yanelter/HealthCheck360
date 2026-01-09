@@ -1,10 +1,18 @@
-# Ignorer les dépendances Node.js (c'est très lourd et inutile)
+# --- DÉPENDANCES ---
 node_modules/
+*/node_modules/
 npm-debug.log
+yarn-error.log
 
-# Ignorer les fichiers systèmes Mac/Windows
+# --- BASE DE DONNÉES (TRES IMPORTANT) ---
+# On ne veut pas envoyer les fichiers binaires de MySQL
+database/data/
+mysql-data/
+*.sql.gz
+
+# --- SYSTÈME & ENVIRONNEMENT ---
 .DS_Store
 Thumbs.db
-
-# Ignorer les variables d'environnement (sécurité)
 .env
+.idea/
+.vscode/

@@ -35,4 +35,4 @@ services:
     build: ./frontend
     container_name: healthcheck_web
     ports:
-      - "8081:80" # Ton site sera accessible sur localhost:8080
+      - "8081:80" # Ton site sera accessible sur localhost:8081

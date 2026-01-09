@@ -28,24 +28,28 @@
             <div class="logo">HealthCheck<span>360</span></div>
             
             <ul class="menu-items">
-                <li><button class="nav-btn">Menu</button></li>
-                <li><button class="nav-btn" onclick="app.showPage('config')">Modifier une zone</button></li>
-                <li><button class="nav-btn">Checklists</button></li>
-                <li><button class="nav-btn" onclick="app.showPage('dashboard')">Dashboard</button></li>
-                <li><button class="nav-btn">Utilisateurs</button></li>
+                <li class="menu-admin"><button class="nav-btn" onclick="app.showPage('dashboard-admin')"><i class="fa fa-chart-line"></i> Dashboard</button></li>
+                <li class="menu-admin"><button class="nav-btn" onclick="app.showPage('config')"><i class="fa fa-map"></i> Configurer Zone</button></li>
+                <li class="menu-admin"><button class="nav-btn" onclick="app.showPage('users')"><i class="fa fa-users"></i> Utilisateurs</button></li>
+
+                <li class="menu-operator"><button class="nav-btn" onclick="app.showPage('checklist-start')"><i class="fa fa-play-circle"></i> Lancer une ronde</button></li>
+                <li class="menu-operator"><button class="nav-btn" onclick="app.showPage('dashboard-op')"><i class="fa fa-history"></i> Mes KPI</button></li>
+
+                <li style="margin-top: auto;"><button class="nav-btn" onclick="location.reload()"><i class="fa fa-sign-out-alt"></i> Déconnexion</button></li>
             </ul>
         </nav>
 
         <main class="main-content">
             <header>
-                <h1>Administration</h1>
-                <div class="user-profile">Profil</div>
+                <h1>HealthCheck Manager</h1>
+                <div class="user-profile"><i class="fa fa-user-circle"></i> Connecté</div>
             </header>
 
-            <div id="page-dashboard" class="page-content hidden">
+            <div id="page-dashboard-admin" class="page-content hidden">
+                <h2>Vue d'ensemble (Admin)</h2>
                 <div class="grid-2x2">
                     <div class="card">
-                        <h3>Derniers HealthCheck :</h3>
+                        <h3>Derniers HealthCheck</h3>
                         <table class="simple-table">
                             <tr><th>Opérateur</th><th>Date</th><th>Zone</th></tr>
                             <tr><td>Marc</td><td>10:00</td><td>Entrepôt A</td></tr>
@@ -53,69 +57,153 @@
                         </table>
                     </div>
                     <div class="card">
-                        <h3>KPI ok/nok :</h3>
-                        <div class="pie-chart-mockup">
-                            <div class="pie-slice"></div>
-                            <span class="legend-ok">■ OK</span>
-                            <span class="legend-nok">■ NOK</span>
+                        <h3>État Global</h3>
+                        <div style="text-align:center; font-size:20px; padding:20px;">
+                            <span style="color:#2ecc71">95% Conforme</span>
                         </div>
                     </div>
-                    <div class="card"><h3>Zones :</h3></div>
-                    <div class="card"><h3>Mesures :</h3></div>
                 </div>
             </div>
 
-            <div id="page-config" class="page-content active">
+            <div id="page-config" class="page-content hidden">
                 <div class="config-layout">
-                    
                     <div class="config-panel">
                         <h3>Configurer les mesures</h3>
-                        
                         <div class="form-group">
-                            <label>Attribuer à une checklist</label>
-                            <select><option>Ronde Hebdo</option></select>
+                            <label>Nom du point</label>
+                            <input type="text" placeholder="Ex: Extincteur B">
                         </div>
                         <div class="form-group">
-                            <label>Ajouter un nom</label>
-                            <input type="text" placeholder="Nom du point">
-                        </div>
-                        <div class="form-group">
-                            <label>Définir le type</label>
+                            <label>Type</label>
                             <select id="inputTypeSelect">
                                 <option value="BOOL">Oui / Non</option>
                                 <option value="NUMERIC">Numérique</option>
                             </select>
                         </div>
-                        
-                        <div class="form-group btn-row">
-                            <button class="btn-primary" onclick="app.openModal()">Nouvelle mesure +</button>
-                        </div>
+                        <button class="btn-primary" onclick="app.openModal()">Ajouter sur le plan +</button>
                     </div>
 
                     <div class="map-panel">
-                        <div class="map-header">
-                            <span>Plan : Entrepôt A</span>
-                            <i class="fa fa-expand"></i>
-                        </div>
-                        
+                        <div class="map-header"><span>Plan : Entrepôt A</span></div>
                         <div class="map-container" id="mapContainer" onclick="app.addPoint(event)">
-                            <img src="https://placehold.co/800x600/EEE/31343C?text=Plan+Entrepôt" alt="Plan" class="map-img">
+                            <img src="https://placehold.co/800x600/EEE/31343C?text=Plan+Entrepôt+A" alt="Plan" class="map-img">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-users" class="page-content hidden">
+                <div class="header-flex">
+                    <h2>Gestion des Utilisateurs</h2>
+                    <button class="btn-primary" onclick="app.openUserModal()">+ Ajouter un utilisateur</button>
+                </div>
+                <div class="card">
+                    <table class="simple-table" id="usersTable">
+                        <thead>
+                            <tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Action</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div id="page-dashboard-op" class="page-content hidden">
+                <h2>Mes Performances</h2>
+                <div class="grid-2x2">
+                    <div class="card"><h3>Rondes ce mois</h3><p style="font-size:30px">12</p></div>
+                    <div class="card"><h3>Conformité</h3><p style="font-size:30px; color:green">100%</p></div>
+                </div>
+            </div>
+
+            <div id="page-checklist-start" class="page-content hidden">
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <h2>Démarrer une inspection</h2>
+                    <div class="form-group">
+                        <label>Choisir le bâtiment</label>
+                        <select id="select-zone-op"><option value="1">Entrepôt A</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fréquence</label>
+                        <select id="select-freq-op">
+                            <option value="DAILY">Journalière</option>
+                            <option value="WEEKLY">Hebdomadaire</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="app.startInspection()">COMMENCER LE CHECK</button>
+                </div>
+            </div>
+
+            <div id="page-checklist-run" class="page-content hidden">
+                <div class="inspection-header">
+                    <button class="btn-secondary" onclick="app.showPage('checklist-start')">← Quitter</button>
+                    <h2>Inspection : <span id="inspection-title">...</span></h2>
+                    <div class="progress-container">
+                        <span>Progression : <span id="progress-text">0/0</span></span>
+                        <div class="progress-bar"><div id="progress-fill" style="width: 0%;"></div></div>
+                    </div>
+                    <button class="btn-primary" id="btn-finish-inspection" style="display:none;" onclick="app.finishInspection()">Terminer ✅</button>
+                </div>
+
+                <div class="inspection-layout">
+                    <div class="question-panel" id="question-panel">
+                        <div id="empty-state-msg" class="empty-state">
+                            <i class="fa fa-hand-pointer"></i>
+                            <p>Cliquez sur un point sur le plan.</p>
+                        </div>
+                        <div id="active-question-form" class="hidden">
+                            <h3 id="point-title">Point #1</h3>
+                            <p class="question-text" id="question-label">Question ?</p>
                             
-                            <div class="map-point" style="left: 20%; top: 40%;" onclick="event.stopPropagation(); app.openModal()">
-                                <i class="fa fa-star" style="color: #e67e22;"></i>
+                            <div class="form-group">
+                                <label>Réponse</label>
+                                <div id="input-container"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Commentaire</label>
+                                <textarea id="comment-input" rows="2"></textarea>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn-validate" onclick="app.saveAnswer()">Valider</button>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="map-panel operator-map">
+                        <div class="map-container" id="operatorMapContainer">
+                            <img src="" alt="Plan" class="map-img" id="operator-map-img">
+                            </div>
                         <div class="legend-box">
-                            <h4>Légende</h4>
-                            <div class="legend-item"><i class="fa fa-star" style="color: #27ae60;"></i> Low priority</div>
-                            <div class="legend-item"><i class="fa fa-star" style="color: #e67e22;"></i> Medium priority</div>
-                            <div class="legend-item"><i class="fa fa-star" style="color: #c0392b;"></i> High priority</div>
+                            <div class="legend-item"><i class="fa fa-circle" style="color:#95a5a6;"></i> À faire</div>
+                            <div class="legend-item"><i class="fa fa-check-circle" style="color:#2ecc71;"></i> OK</div>
+                            <div class="legend-item"><i class="fa fa-exclamation-circle" style="color:#e74c3c;"></i> Problème</div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </main>
+    </div>
+
+    <div id="modal-user" class="modal hidden">
+        <div class="modal-content">
+            <h3>Nouvel Utilisateur</h3>
+            <div class="form-group"><label>Prénom</label><input type="text" id="new_firstname"></div>
+            <div class="form-group"><label>Nom</label><input type="text" id="new_lastname"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="new_email"></div>
+            <div class="form-group"><label>Mot de passe</label><input type="password" id="new_password"></div>
+            <div class="form-group">
+                <label>Rôle</label>
+                <select id="new_role">
+                    <option value="OPERATOR">Opérateur Terrain</option>
+                    <option value="ADMIN">Administrateur</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="app.closeUserModal()">Annuler</button>
+                <button class="btn-primary" onclick="app.createUser()">Créer</button>
+            </div>
+        </div>
     </div>
 
     <div id="modal-measure" class="modal hidden">
@@ -127,26 +215,10 @@
             <div class="modal-body">
                 <label>Nom de la mesure</label>
                 <input type="text" placeholder="Ex: Pression extincteur">
-                
-                <label>Type de la mesure</label>
-                <input type="text" placeholder="Numérique / Booléen">
-                
                 <div class="row">
-                    <div>
-                        <label>Seuil Min</label>
-                        <input type="number" placeholder="Min">
-                    </div>
-                    <div>
-                        <label>Seuil Max</label>
-                        <input type="number" placeholder="Max">
-                    </div>
+                    <div><label>Min</label><input type="number"></div>
+                    <div><label>Max</label><input type="number"></div>
                 </div>
-
-                <label>Fréquence de vérification</label>
-                <select>
-                    <option>Hebdomadaire</option>
-                    <option>Mensuelle</option>
-                </select>
             </div>
             <div class="modal-footer">
                 <button class="btn-primary" onclick="app.saveMeasure()">Créer</button>
