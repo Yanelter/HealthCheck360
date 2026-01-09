@@ -5,19 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthCheck360</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
 </head>
 <body>
 
     <div id="login-screen" class="screen active">
+
+
         <div class="login-container">
-            <h2>HealthCheck<span>360</span></h2>
-            <div class="login-box">
+            <img src="https://raw.githubusercontent.com/Yanelter/Projeti5/main/Logo.png" 
+     alt="HealthCheck360 Logo" 
+     class="login-logo-img" 
+     style="width: 400px; transform: scale(2.0); margin: 40px auto;">
+
+
+           <div class="login-box">
                 <label>Adresse email</label>
                 <input type="email" placeholder="exemple@entreprise.com">
                 <label>Mot de passe</label>
                 <input type="password" placeholder="********">
-                <button onclick="app.login()">Se connecter</button>
+                <button onclick="console.log('Click détecté !'); app.login()">Se connecter</button>
             </div>
         </div>
     </div>
@@ -25,8 +34,12 @@
     <div id="admin-interface" class="screen hidden">
         
         <nav class="sidebar">
-            <div class="logo">HealthCheck<span>360</span></div>
-            
+            <img src="https://raw.githubusercontent.com/Yanelter/Projeti5/main/Logo.png" 
+     alt="HealthCheck360 Logo" 
+     class="sidebar-logo-img" 
+     style="width: 100px; transform: scale(2.0); margin: 40px auto;">
+
+
             <ul class="menu-items">
                 <li class="menu-admin"><button class="nav-btn" onclick="app.showPage('dashboard-admin')"><i class="fa fa-chart-line"></i> Dashboard</button></li>
                 <li class="menu-admin"><button class="nav-btn" onclick="app.showPage('config')"><i class="fa fa-map"></i> Configurer Zone</button></li>
@@ -46,24 +59,25 @@
             </header>
 
             <div id="page-dashboard-admin" class="page-content hidden">
-                <h2>Vue d'ensemble (Admin)</h2>
-                <div class="grid-2x2">
-                    <div class="card">
-                        <h3>Derniers HealthCheck</h3>
-                        <table class="simple-table">
-                            <tr><th>Opérateur</th><th>Date</th><th>Zone</th></tr>
-                            <tr><td>Marc</td><td>10:00</td><td>Entrepôt A</td></tr>
-                            <tr><td>Julie</td><td>09:45</td><td>Parking</td></tr>
-                        </table>
-                    </div>
-                    <div class="card">
-                        <h3>État Global</h3>
-                        <div style="text-align:center; font-size:20px; padding:20px;">
-                            <span style="color:#2ecc71">95% Conforme</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <h2>Vue d'ensemble (Admin)</h2>
+    <div class="grid-2x2">
+        <div class="card">
+            <h3>Derniers HealthCheck</h3>
+            <table class="simple-table">
+                <tr><th>Opérateur</th><th>Date</th><th>Zone</th></tr>
+                <tr><td>Marc</td><td>10:00</td><td>Entrepôt A</td></tr>
+                <tr><td>Julie</td><td>09:45</td><td>Parking</td></tr>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h3>Conformité Globale</h3>
+            <div style="height: 250px; position: relative; width: 100%;">
+    <canvas id="kpiChart"></canvas>
+</div>
+        </div>
+        </div>
+</div>
 
             <div id="page-config" class="page-content hidden">
                 <div class="config-layout">

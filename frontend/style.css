@@ -21,7 +21,15 @@ body { background-color: #f5f6fa; height: 100vh; overflow: hidden; }
     align-items: center;
     background: #dfe6e9;
 }
-.login-container h2 { text-align: center; margin-bottom: 20px; color: var(--sidebar-bg); }
+/* ================= STYLES DES LOGOS ================= */
+
+/* ================= STYLES DES LOGOS (VERSION CORRIGÉE V3) ================= */
+
+/* ================= STYLES DES LOGOS (VERSION XXL) ================= */
+
+
+
+
 .login-container span { color: red; }
 .login-box {
     background: white; padding: 40px; width: 350px;
